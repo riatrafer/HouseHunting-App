@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>TrustStay</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header class="app-header">
+      <h1>TrustStay</h1>
+      <div class="header-actions">
+        <button id="heatmapBtn" class="ghost-btn" type="button">Heatmap</button>
+        <button id="dashboardBtn" class="ghost-btn" type="button">Landlord Dashboard</button>
+      </div>
+    </header>
+
+    <main id="app"></main>
+
+    <template id="starTemplate">
+      <span class="stars"></span>
+    </template>
+
+    <script src="app.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
+  </body>
+</html>

@@ -1,0 +1,572 @@
+{
+  "houses": [
+    {
+      "id": 1,
+      "name": "2 bedrooms in Kilimani",
+      "location": "Kilimani, Nairobi",
+      "fullAddress": "Kindaruma Road, Kilimani, Nairobi",
+      "purpose": "Rent (pay monthly)",
+      "priceText": "35,000 KES per month",
+      "photo": "https://images.unsplash.com/photo-1572120360610-d971b9d7767c?auto=format&fit=crop&w=1200&q=80",
+      "averageStars": 4.2,
+      "isRented": false,
+      "managerName": "David Njoroge",
+      "fakeViews": 316,
+      "fakeMessages": 12,
+      "landlord": {
+        "name": "Grace Wanjiku",
+        "verified": true
+      },
+      "ratingBreakdown": [
+        {
+          "item": "Sewage",
+          "score": 4,
+          "comment": "The toilet and dirty water pipes work well."
+        },
+        {
+          "item": "Electricity",
+          "score": 4,
+          "comment": "The power stays on, with very few blackouts."
+        },
+        {
+          "item": "Water",
+          "score": 5,
+          "comment": "Tap water comes every day."
+        },
+        {
+          "item": "Security",
+          "score": 4,
+          "comment": "The area is safe from thieves."
+        },
+        {
+          "item": "Roads",
+          "score": 4,
+          "comment": "The road is mostly good and not muddy."
+        }
+      ],
+      "pastTenantComment": {
+        "text": "The water is perfect every day. But the road becomes mud when it rains. Still a good house.",
+        "author": "Mary, former tenant"
+      },
+      "ratings": [
+        {
+          "author": "Mary",
+          "sewage": 4,
+          "electricity": 4,
+          "water": 5,
+          "security": 4,
+          "roads": 3,
+          "overall": 4.0,
+          "comment": "Water is great but the road is bad."
+        },
+        {
+          "author": "Kevin",
+          "sewage": 4,
+          "electricity": 4,
+          "water": 4,
+          "security": 5,
+          "roads": 4,
+          "overall": 4.2,
+          "comment": "Secure place and reliable power."
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "name": "Studio in Westlands",
+      "location": "Westlands, Nairobi",
+      "fullAddress": "Muthithi Road, Westlands, Nairobi",
+      "purpose": "Rent (pay monthly)",
+      "priceText": "18,000 KES per month",
+      "photo": "https://images.unsplash.com/photo-1484154218962-a197022b5858?auto=format&fit=crop&w=1200&q=80",
+      "averageStars": 2.5,
+      "isRented": false,
+      "managerName": "Edna Achieng",
+      "fakeViews": 204,
+      "fakeMessages": 8,
+      "landlord": {
+        "name": "Martin Otieno",
+        "verified": false
+      },
+      "ratingBreakdown": [
+        {
+          "item": "Sewage",
+          "score": 2,
+          "comment": "Pipes need occasional repair."
+        },
+        {
+          "item": "Electricity",
+          "score": 3,
+          "comment": "Power is fair but some outages happen."
+        },
+        {
+          "item": "Water",
+          "score": 2,
+          "comment": "Tap water is not always daily."
+        },
+        {
+          "item": "Security",
+          "score": 3,
+          "comment": "Security is average."
+        },
+        {
+          "item": "Roads",
+          "score": 2,
+          "comment": "Road quality is poor during heavy rain."
+        }
+      ],
+      "pastTenantComment": {
+        "text": "Cheap house, but water is not stable every day.",
+        "author": "Jane, former tenant"
+      },
+      "ratings": [
+        {
+          "author": "Jane",
+          "sewage": 2,
+          "electricity": 3,
+          "water": 2,
+          "security": 3,
+          "roads": 2,
+          "overall": 2.4,
+          "comment": "Affordable but services are inconsistent."
+        },
+        {
+          "author": "Alex",
+          "sewage": 3,
+          "electricity": 3,
+          "water": 2,
+          "security": 3,
+          "roads": 2,
+          "overall": 2.6,
+          "comment": "Location is good but roads and water need improvement."
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "name": "3 bedrooms in Kileleshwa",
+      "location": "Kileleshwa, Nairobi",
+      "fullAddress": "Gatundu Road, Kileleshwa, Nairobi",
+      "purpose": "Lease (pay for 1 year)",
+      "priceText": "65,000 KES per month",
+      "photo": "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=1200&q=80",
+      "averageStars": 4.8,
+      "isRented": false,
+      "managerName": "Peter Mwangi",
+      "fakeViews": 520,
+      "fakeMessages": 22,
+      "landlord": {
+        "name": "Lilian Njeri",
+        "verified": true
+      },
+      "ratingBreakdown": [
+        {
+          "item": "Sewage",
+          "score": 5,
+          "comment": "Sewage system is excellent."
+        },
+        {
+          "item": "Electricity",
+          "score": 5,
+          "comment": "Very stable electricity."
+        },
+        {
+          "item": "Water",
+          "score": 5,
+          "comment": "Water is available every day."
+        },
+        {
+          "item": "Security",
+          "score": 4,
+          "comment": "Secure area with night patrol."
+        },
+        {
+          "item": "Roads",
+          "score": 5,
+          "comment": "Roads are very good."
+        }
+      ],
+      "pastTenantComment": {
+        "text": "Great house and very secure environment.",
+        "author": "Anne, former tenant"
+      },
+      "ratings": [
+        {
+          "author": "Anne",
+          "sewage": 5,
+          "electricity": 5,
+          "water": 5,
+          "security": 4,
+          "roads": 5,
+          "overall": 4.8,
+          "comment": "Premium stay with all services working well."
+        },
+        {
+          "author": "Brian",
+          "sewage": 5,
+          "electricity": 5,
+          "water": 4,
+          "security": 5,
+          "roads": 5,
+          "overall": 4.8,
+          "comment": "Excellent roads and security."
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "name": "Bedsitter in Ruaka",
+      "location": "Ruaka, Kiambu",
+      "fullAddress": "Banana Road, Ruaka, Kiambu",
+      "purpose": "Rent (pay monthly)",
+      "priceText": "8,000 KES per month",
+      "photo": "https://images.unsplash.com/photo-1493666438817-866a91353ca9?auto=format&fit=crop&w=1200&q=80",
+      "averageStars": 3.0,
+      "isRented": false,
+      "managerName": "Ruth Wairimu",
+      "fakeViews": 140,
+      "fakeMessages": 4,
+      "landlord": {
+        "name": "Samuel Kariuki",
+        "verified": false
+      },
+      "ratingBreakdown": [
+        {
+          "item": "Sewage",
+          "score": 3,
+          "comment": "Sewage is acceptable."
+        },
+        {
+          "item": "Electricity",
+          "score": 3,
+          "comment": "Electricity mostly stable."
+        },
+        {
+          "item": "Water",
+          "score": 3,
+          "comment": "Water is available most days."
+        },
+        {
+          "item": "Security",
+          "score": 3,
+          "comment": "Security is moderate."
+        },
+        {
+          "item": "Roads",
+          "score": 3,
+          "comment": "Roads are manageable but can get muddy."
+        }
+      ],
+      "pastTenantComment": {
+        "text": "Good for budget living.",
+        "author": "Paul, former tenant"
+      },
+      "ratings": [
+        {
+          "author": "Paul",
+          "sewage": 3,
+          "electricity": 3,
+          "water": 3,
+          "security": 3,
+          "roads": 3,
+          "overall": 3.0,
+          "comment": "Balanced budget option."
+        },
+        {
+          "author": "Vivian",
+          "sewage": 2,
+          "electricity": 3,
+          "water": 3,
+          "security": 4,
+          "roads": 3,
+          "overall": 3.0,
+          "comment": "Secure enough, roads just average."
+        }
+      ]
+    },
+    {
+      "id": 5,
+      "name": "4 bedrooms in Karen",
+      "location": "Karen, Nairobi",
+      "fullAddress": "Bogani Road, Karen, Nairobi",
+      "purpose": "Buy (own the house)",
+      "priceText": "12,000,000 KES total",
+      "photo": "https://images.unsplash.com/photo-1568605114967-8130f3a36994?auto=format&fit=crop&w=1200&q=80",
+      "averageStars": 4.5,
+      "isRented": false,
+      "managerName": "Catherine Wanjiru",
+      "fakeViews": 680,
+      "fakeMessages": 35,
+      "landlord": {
+        "name": "Henry Githinji",
+        "verified": true
+      },
+      "ratingBreakdown": [
+        {
+          "item": "Sewage",
+          "score": 4,
+          "comment": "Sewage runs cleanly."
+        },
+        {
+          "item": "Electricity",
+          "score": 5,
+          "comment": "Power is very stable."
+        },
+        {
+          "item": "Water",
+          "score": 5,
+          "comment": "Water is consistent every day."
+        },
+        {
+          "item": "Security",
+          "score": 5,
+          "comment": "Very secure neighborhood."
+        },
+        {
+          "item": "Roads",
+          "score": 4,
+          "comment": "Road is good and paved."
+        }
+      ],
+      "pastTenantComment": {
+        "text": "Spacious and secure. Great for families.",
+        "author": "Susan, former tenant"
+      },
+      "ratings": [
+        {
+          "author": "Susan",
+          "sewage": 4,
+          "electricity": 5,
+          "water": 5,
+          "security": 5,
+          "roads": 4,
+          "overall": 4.6,
+          "comment": "Very strong all-round quality."
+        },
+        {
+          "author": "Mark",
+          "sewage": 4,
+          "electricity": 4,
+          "water": 5,
+          "security": 5,
+          "roads": 4,
+          "overall": 4.4,
+          "comment": "Excellent security and clean environment."
+        }
+      ]
+    },
+    {
+      "id": 6,
+      "name": "2 bedrooms in Syokimau",
+      "location": "Syokimau, Machakos",
+      "fullAddress": "Katani Road, Syokimau, Machakos",
+      "purpose": "Rent (pay monthly)",
+      "priceText": "25,000 KES per month",
+      "photo": "https://images.unsplash.com/photo-1512918728675-ed5a9ecdebfd?auto=format&fit=crop&w=1200&q=80",
+      "averageStars": 3.8,
+      "isRented": false,
+      "managerName": "George Musyoka",
+      "fakeViews": 292,
+      "fakeMessages": 11,
+      "landlord": {
+        "name": "Purity Mwende",
+        "verified": true
+      },
+      "ratingBreakdown": [
+        {
+          "item": "Sewage",
+          "score": 4,
+          "comment": "Sewage is reliable."
+        },
+        {
+          "item": "Electricity",
+          "score": 4,
+          "comment": "Power is mostly stable."
+        },
+        {
+          "item": "Water",
+          "score": 4,
+          "comment": "Water available daily."
+        },
+        {
+          "item": "Security",
+          "score": 4,
+          "comment": "Security is good."
+        },
+        {
+          "item": "Roads",
+          "score": 3,
+          "comment": "Roads are okay but some dust."
+        }
+      ],
+      "pastTenantComment": {
+        "text": "Good location and manageable rent.",
+        "author": "Moses, former tenant"
+      },
+      "ratings": [
+        {
+          "author": "Moses",
+          "sewage": 4,
+          "electricity": 4,
+          "water": 4,
+          "security": 4,
+          "roads": 3,
+          "overall": 3.8,
+          "comment": "Worth the price."
+        },
+        {
+          "author": "Lydia",
+          "sewage": 4,
+          "electricity": 3,
+          "water": 4,
+          "security": 4,
+          "roads": 4,
+          "overall": 3.8,
+          "comment": "Reliable utilities most of the time."
+        }
+      ]
+    },
+    {
+      "id": 7,
+      "name": "1 bedroom near the airport",
+      "location": "Near JKIA, Nairobi",
+      "fullAddress": "Airport North Road, Embakasi, Nairobi",
+      "purpose": "Airbnb (pay for one night)",
+      "priceText": "3,000 KES per night",
+      "photo": "https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=1200&q=80",
+      "averageStars": 4.0,
+      "isRented": false,
+      "managerName": "Martha Atieno",
+      "fakeViews": 430,
+      "fakeMessages": 20,
+      "landlord": {
+        "name": "Joseph Mwangi",
+        "verified": true
+      },
+      "ratingBreakdown": [
+        {
+          "item": "Sewage",
+          "score": 4,
+          "comment": "Sewage condition is good."
+        },
+        {
+          "item": "Electricity",
+          "score": 4,
+          "comment": "Electricity is stable."
+        },
+        {
+          "item": "Water",
+          "score": 4,
+          "comment": "Water comes every day."
+        },
+        {
+          "item": "Security",
+          "score": 4,
+          "comment": "Safe for short stays."
+        },
+        {
+          "item": "Roads",
+          "score": 4,
+          "comment": "Roads are good."
+        }
+      ],
+      "pastTenantComment": {
+        "text": "Perfect for airport access.",
+        "author": "Tom, former tenant"
+      },
+      "ratings": [
+        {
+          "author": "Tom",
+          "sewage": 4,
+          "electricity": 4,
+          "water": 4,
+          "security": 4,
+          "roads": 4,
+          "overall": 4.0,
+          "comment": "Very convenient for travel."
+        },
+        {
+          "author": "Nadia",
+          "sewage": 4,
+          "electricity": 4,
+          "water": 3,
+          "security": 5,
+          "roads": 4,
+          "overall": 4.0,
+          "comment": "Secure and clean."
+        }
+      ]
+    },
+    {
+      "id": 8,
+      "name": "3 bedrooms in Juja",
+      "location": "Juja, Kiambu",
+      "fullAddress": "Thika Superhighway Service Road, Juja",
+      "purpose": "Lease (pay for 6 months)",
+      "priceText": "40,000 KES per month",
+      "photo": "https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?auto=format&fit=crop&w=1200&q=80",
+      "averageStars": 2.0,
+      "isRented": false,
+      "managerName": "Anthony Maina",
+      "fakeViews": 118,
+      "fakeMessages": 5,
+      "landlord": {
+        "name": "Beatrice Njeri",
+        "verified": false
+      },
+      "ratingBreakdown": [
+        {
+          "item": "Sewage",
+          "score": 2,
+          "comment": "Sewage has occasional blockage."
+        },
+        {
+          "item": "Electricity",
+          "score": 2,
+          "comment": "Blackouts are frequent."
+        },
+        {
+          "item": "Water",
+          "score": 2,
+          "comment": "Water is not very reliable."
+        },
+        {
+          "item": "Security",
+          "score": 2,
+          "comment": "Security needs improvement."
+        },
+        {
+          "item": "Roads",
+          "score": 2,
+          "comment": "Roads are poor when raining."
+        }
+      ],
+      "pastTenantComment": {
+        "text": "Could improve services and roads.",
+        "author": "Eric, former tenant"
+      },
+      "ratings": [
+        {
+          "author": "Eric",
+          "sewage": 2,
+          "electricity": 2,
+          "water": 2,
+          "security": 2,
+          "roads": 2,
+          "overall": 2.0,
+          "comment": "Needs major upgrades."
+        },
+        {
+          "author": "Stella",
+          "sewage": 2,
+          "electricity": 2,
+          "water": 1,
+          "security": 3,
+          "roads": 2,
+          "overall": 2.0,
+          "comment": "Budget-friendly but quality is low."
+        }
+      ]
+    }
+  ]
+}
