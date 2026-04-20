@@ -41,6 +41,26 @@ const serviceProviders = [
   { type: "Riders", name: "Swift Riders", phone: "+254 700 100 208", location: "Airport North Road" },
 ];
 
+// API helper function
+const API_BASE = "http://localhost:3000/api";
+
+const apiRequest = async (endpoint, method = "GET", data = null) => {
+  try {
+    const res = await fetch(`${API_BASE}${endpoint}`, {
+      method,
+      headers: { "Content-Type": "application/json" },
+      body: data ? JSON.stringify(data) : null,
+    });
+
+    return await res.json();
+  } catch (error) {
+    console.error(error);
+    showStatusToast("Network error", "error");
+  }
+};
+
+const formatPhone = (phone) => phone.replace(/^0/, "254");
+
 const toStars = (value) => {
   const rounded = Math.round(value);
   return "★".repeat(rounded) + "☆".repeat(STARS_OUT_OF_5 - rounded);
@@ -193,9 +213,19 @@ const renderLandlordRegister = () => {
     document.getElementById("otpForm").style.display = "block";
   };
 
-  document.getElementById("otpForm").onsubmit = (e) => {
+  document.getElementById("otpForm").onsubmit = async (e) => {
     e.preventDefault();
-    showStatusToast("Registration complete");
+
+    const formData = new FormData(event.target);
+    await apiRequest("/landlord/register", "POST", {
+      name: formData.get("name"),
+      phone: formData.get("phone"),
+      idNumber: formData.get("id"),
+      lrNumber: formData.get("landRef"),
+      ocNumber: formData.get("ocNumber") || "demo-oc",
+      password: formData.get("password"),
+    });
+    showStatusToast("Registered successfully");
     setScreen("landlordLogin");
   };
 };
@@ -332,12 +362,23 @@ const renderTenantDashboard = () => {
   `;
 
   document.querySelectorAll("[data-tenant-action]").forEach((button) => {
-    button.addEventListener("click", () => {
+    button.addEventListener("click", async () => {
       const action = button.dataset.tenantAction;
       if (action === "houses") {
         openHouseList(null, "tenantDashboard");
         return;
       }
+    
+    if (action === "payment") {
+      const phone = prompt("Enter phone number (+254...)");
+      const amount = prompt("Enter rent amount");
+      if (!phone || !amount) return;
+      await apiRequest("/payments/pay", "POST", {
+        phone,
+        amount,
+      });
+      showStatusToast("STK Push sent. Check your phone.");
+}
 
       const messageMap = {
         payment: "Payment module opened for tenant account.",
@@ -353,7 +394,6 @@ const renderTenantDashboard = () => {
 const renderMenu = () => {
   app.innerHTML = `
     <section class="screen">
-      <div class="banner">New house matches your search.</div>
       <div class="card house-content">
         <h2>Units / Listings Menu</h2>
         <p class="muted">All units appear first, then you can filter by category and exact location.</p>
@@ -683,7 +723,7 @@ const renderBookAppointment = (house) => {
 
   document.getElementById("backToDetails").addEventListener("click", () => setScreen("houseDetails", house.id));
 
-  document.getElementById("appointmentForm").addEventListener("submit", (event) => {
+  document.getElementById("appointmentForm").addEventListener("submit", async(event) => {
     event.preventDefault();
     const formData = new FormData(event.target);
     const request = {
@@ -691,22 +731,9 @@ const renderBookAppointment = (house) => {
       date: formData.get("date"),
       time: formData.get("time"),
       message: safeText(formData.get("message")),
-      to: house.managerName,
-      createdAt: new Date().toISOString(),
     };
-    state.appointmentRequests.push(request);
-
-    if (!state.chats[house.id]) state.chats[house.id] = [];
-    state.chats[house.id].push({
-      from: "user",
-      text: `Appointment request: ${request.date} at ${request.time}. ${request.message}`,
-    });
-    state.chats[house.id].push({
-      from: "manager",
-      text: `Hi, I am ${house.managerName}. I received your request and can host you at the chosen time.`,
-    });
-
-    showStatusToast("SMS sent to landlord and manager (simulated)");
+    await apiRequest("/appointments/book", "POST", request);
+    showStatusToast("SMS sent to landlord");
     setScreen("houseDetails", house.id);
   });
 };
@@ -774,6 +801,14 @@ const renderLandlordDashboard = () => {
           <button class="${house.occupancyStatus === "occupied" ? "ghost-btn" : "danger-btn"}" data-toggle-occupancy="${house.id}" type="button">
             ${house.occupancyStatus === "occupied" ? "Mark as Vacant" : "Mark as Occupied"}
           </button>
+          <!-- Delete button -->
+          <button class="danger-btn" data-delete-house="${house.id}" type="button">
+            Delete Property
+          </button>
+          <button class="ghost-btn" data-generate-qr="${house.id}">
+          Generate QR Code
+          </button>
+
         </article>
       `
     )
@@ -798,6 +833,7 @@ const renderLandlordDashboard = () => {
       ${onboardingSummary}
       <button id="addHouseBtn" class="primary-btn">Add Property</button>
       <button id="generateCodeBtn" class="ghost-btn">Generate Tenant Code</button>
+      <div id="qrContainer"></div>
       <div class="house-grid">${items}</div>
     </section>
   `;
@@ -808,8 +844,8 @@ const renderLandlordDashboard = () => {
     const code = Math.random().toString(36).substring(2, 8).toUpperCase();
     showStatusToast("Tenant Code: " + code);
     });
-
-  document.querySelectorAll("[data-toggle-occupancy]").forEach((button) => {
+    // Toggle occupancy status
+    document.querySelectorAll("[data-toggle-occupancy]").forEach((button) => {
     button.addEventListener("click", () => {
       const houseId = Number(button.dataset.toggleOccupancy);
       const house = getHouseById(houseId);
@@ -818,11 +854,49 @@ const renderLandlordDashboard = () => {
       house.isRented = house.occupancyStatus === "occupied";
       renderLandlordDashboard();
     });
+    });
+    // Delete house
+    document.querySelectorAll("[data-delete-house]").forEach((btn) => {
+      btn.addEventListener("click", () => {
+      const houseId = Number(btn.dataset.deleteHouse);
+
+      const confirmDelete = confirm("Are you sure you want to delete this property?");
+      if (!confirmDelete) return;
+      state.houses = state.houses.filter(h => h.id !== houseId);
+      showStatusToast("Property deleted");
+      renderLandlordDashboard();
+    });
   });
+    // Generate tenant code
     document.getElementById("generateCodeBtn").onclick = () => {
-  const code = Math.random().toString(36).substring(2, 8).toUpperCase();
-  showStatusToast("Tenant Code: " + code);
-};
+      const code = Math.random().toString(36).substring(2, 8).toUpperCase();
+      showStatusToast("Tenant Code: " + code);
+    };
+    //Generate QR code for tenant onboarding
+  document.querySelectorAll("[data-generate-qr]").forEach((btn) => {
+  btn.addEventListener("click", () => {
+    const houseId = btn.dataset.generateQr;
+
+    const url = `https://yourapp.com/provider-onboard?houseId=${houseId}&landlordId=demo123`;
+
+    const container = document.getElementById("qrContainer");
+    container.innerHTML = "";
+
+    QRCode.toCanvas(url, { width: 180 }, (err, canvas) => {
+      if (err) return console.error(err);
+
+      container.appendChild(canvas);
+
+      // Optional: add print button dynamically
+      const printBtn = document.createElement("button");
+      printBtn.textContent = "Print QR";
+      printBtn.className = "primary-btn";
+      printBtn.onclick = () => window.print();
+
+      container.appendChild(printBtn);
+    });
+  });
+});
 };
   const renderAddHouse = () => {
   app.innerHTML = `
@@ -843,8 +917,7 @@ const renderLandlordDashboard = () => {
           </select>
 
           <input type="number" placeholder="Number of Units" required />
-
-          <input placeholder="Occupation Certificate Number" />
+          <input placeholder="Occupation Certificate Number" name="ocNumber" required />
           <input placeholder="NCA Project ID" />
 
           <button class="primary-btn">Save Property</button>
@@ -853,8 +926,32 @@ const renderLandlordDashboard = () => {
     </section>
   `;
 
-  document.getElementById("houseForm").onsubmit = (e) => {
+  document.getElementById("houseForm").onsubmit = async (e) => {
     e.preventDefault();
+    const form = e.target;
+
+    const newHouse = {
+      id: Date.now(),
+      name: form[0].value,
+      unitCategory: form[1].value,
+      units: Number(form[2].value),
+      ocNumber: form[3].value,
+      occupancyStatus: "vacant",
+      isRented: false,
+      fakeViews: 0,
+      fakeMessages: 0,
+      location: "New Listings",
+      priceText: "Price on request",
+      landlord: {
+        name: "You", verified: true},
+        managerName: "You",
+      ratings: [],
+      ratingBreakdown: [],
+      averageStars: 0,
+      pastTenantComment: { text: "", author: "" },
+      photo: "https://via.placeholder.com/400x300?text=New+Property",
+    };
+    state.houses.push(newHouse);
     showStatusToast("Property added successfully");
     setScreen("dashboard");
   };
@@ -862,7 +959,7 @@ const renderLandlordDashboard = () => {
 
 const renderAddRating = (house) => {
   if (!house) {
-    app.innerHTML = `<p>House not found.</p>`;
+    app.innerHTML = `<p>House not found.</p>`;                                                                      
     return;
   }
 
@@ -919,6 +1016,65 @@ const renderAddRating = (house) => {
   });
 };
 
+// Service provider
+const renderProviderOnboard = () => {
+  const houseId = state.providerContext?.houseId;
+  const landlordId = state.providerContext?.landlordId;
+  app.innerHTML = `
+    <section class="screen">
+      <h2>Service Provider Registration</h2>
+
+      <form id="providerForm">
+        <input name="name" placeholder="Business Name" required />
+        <input name="phone" placeholder="+2547XXXXXXXX" required />
+
+        <select name="serviceType">
+          <option>Groceries</option>
+          <option>Gas Supply</option>
+          <option>Furniture</option>
+          <option>Hotels</option>
+          <option>Malls</option>
+          <option>Supermarkets</option>
+          <option>Drinking Water</option>
+          <option>Riders</option>
+        </select>
+
+        <input name="paymentMethod" placeholder="M-Pesa Till / Paybill" required />
+        <input name="url" placeholder="Website or WhatsApp link" />
+
+        <button class="primary-btn">Proceed to Payment (KES 100)</button>
+      </form>
+    </section>
+  `;
+
+  document.getElementById("providerForm").onsubmit = async (e) => {
+    e.preventDefault();
+
+    const formData = new FormData(e.target);
+
+    const payload = {
+      name: formData.get("name"),
+      phone: formData.get("phone"),
+      serviceType: formData.get("serviceType"),
+      paymentMethod: formData.get("paymentMethod"),
+      url: formData.get("url"),
+      houseId,
+      landlordId,
+    };
+
+    // Step 1: Save provider
+    const res = await apiRequest("/providers/register", "POST", payload);
+
+    // Step 2: Trigger payment
+    await apiRequest("/payments/pay", "POST", {
+      phone: payload.phone,
+      amount: 100,
+    });
+
+    showStatusToast("Complete payment to activate listing");
+  };
+};
+
 const render = () => {
   const canOpenDashboard = state.isLoggedIn && (state.role === "landlord" || state.role === "tenant");
   dashboardBtn.style.visibility = canOpenDashboard ? "visible" : "hidden";
@@ -938,6 +1094,7 @@ const render = () => {
   if (state.currentScreen === "dashboard") return renderLandlordDashboard();
   if (state.currentScreen === "addHouse") return renderAddHouse();
   if (state.currentScreen === "addRating") return renderAddRating(getHouseById(state.selectedHouseId));
+  if (state.currentScreen === "providerOnboard") return renderProviderOnboard();
   return renderLogin();
 };
 
@@ -957,6 +1114,20 @@ heatmapBtn.addEventListener("click", () => {
   window.open(mapsUrl, "_blank");
 });
 
+const handleRouteFromURL = () => {
+  const path = window.location.pathname;
+  const params = new URLSearchParams(window.location.search);
+
+  if (path.includes("provider-onboard")) {
+    state.currentScreen = "providerOnboard";
+
+    state.providerContext = {
+      houseId: params.get("houseId"),
+      landlordId: params.get("landlordId"),
+    };
+  }
+};
+
 const bootstrap = async () => {
   try {
     const response = await fetch("data/houses.json");
@@ -965,6 +1136,7 @@ const bootstrap = async () => {
       ...house,
       occupancyStatus: house.occupancyStatus || (house.isRented ? "occupied" : "vacant"),
     }));
+    handleRouteFromURL();
     render();
   } catch (error) {
     app.innerHTML = `<p>Unable to load house data. Please refresh.</p>`;
