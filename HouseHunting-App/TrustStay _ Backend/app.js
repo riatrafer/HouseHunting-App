@@ -433,12 +433,12 @@ const renderLogin = () => {
             <p class="muted">List units, update occupancy, and run landlord actions from one organized dashboard.</p>
           </article>
           <article class="benefit-item">
-            <img class="benefit-icon-image" src="${landingImages.earnWithEase}" alt="Earn with Ease icon" />
+            <img class="benefit-icon-image" src="${landingImages.ecosystem}" alt="Earn with Ease icon" />
             <h4>2. Earn with Ease</h4>
             <p class="muted">Keep listings active, connect with tenants faster, and streamline payment workflows.</p>
           </article>
           <article class="benefit-item">
-            <img class="benefit-icon-image" src="${landingImages.ecosystem}" alt="Smart ecosystem icon" />
+            <img class="benefit-icon-image" src="${landingImages.earnWithEase}" alt="Smart ecosystem icon" />
             <h4>3. Smart Connected Ecosystem</h4>
             <p class="muted">Bring listings, services, tenant requests, and communication into one trusted platform.</p>
           </article>
