@@ -29,6 +29,13 @@ const state = {
 
 const STARS_OUT_OF_5 = 5;
 let toastTimer = null;
+let feedbackTimer = null;
+const landingImages = {
+  manageProperty: "assets/landing/location.png",
+  earnWithEase: "assets/landing/money.png",
+  ecosystem: "assets/landing/laptop.png",
+  process: "assets/landing/diamond.png",
+};
 
 const purposeLabelMap = {
   rent: "Rent",
@@ -370,50 +377,104 @@ const renderPhotoCarousel = (house) => {
 };
 
 const renderLogin = () => {
+  if (feedbackTimer) {
+    clearInterval(feedbackTimer);
+    feedbackTimer = null;
+  }
+
+  const testimonials = [
+    {
+      quote:
+        "TrustStay makes it simple to manage units, occupancy, and tenant onboarding from one dashboard.",
+      author: "Grace N.",
+      role: "Landlord, Nairobi",
+    },
+    {
+      quote:
+        "As a tenant, I can quickly login with my code, submit requests, and still browse better homes easily.",
+      author: "Kevin M.",
+      role: "Tenant, Westlands",
+    },
+    {
+      quote:
+        "The listing workflow is clean. I upload property photos once and my units are live in minutes.",
+      author: "Aisha K.",
+      role: "Property Manager, Kilimani",
+    },
+  ];
+
   app.innerHTML = `
-    <section class="screen">
-      <div class="auth-shell">
-        <div class="card auth-card">
-          <h2>Welcome to TrustStay</h2>
-          <p class="muted">A cleaner home search experience for landlords and tenants.</p>
+    <section class="screen landing-screen">
+      <div class="landing-hero card">
+        <p class="pill">TrustStay Platform</p>
+        <form id="roleSelectForm" class="auth-form centered-auth-form">
+          <label>
+            Continue as
+            <select name="role" id="roleSelect">
+              <option value="landlord">Landlord</option>
+              <option value="tenant">Tenant</option>
+              <option value="guest">Guest</option>
+            </select>
+          </label>
 
-          <form id="roleSelectForm" class="auth-form">
-            <label>
-              Continue as
-              <select name="role" id="roleSelect">
-                <option value="landlord">Landlord</option>
-                <option value="tenant">Tenant</option>
-                <option value="guest">Guest</option>
-              </select>
-            </label>
-
-            <div class="row auth-actions">
-              <button class="primary-btn" type="submit">Continue</button>
-              <button class="ghost-btn" id="registerLandlordBtn" type="button">Register landlord</button>
-            </div>
-            <p class="muted tiny">Landlords manage properties and generate tenant login codes.</p>
-          </form>
-        </div>
-        <div class="card auth-card auth-preview">
-          <h3>What you can do</h3>
-          <div class="tenant-preview-grid">
-            <div class="preview-item">
-              <span class="pill">Landlord</span>
-              <p class="muted">🏠 Add and manage properties with occupancy controls.</p>
-            </div>
-            <div class="preview-item">
-              <span class="pill">Tenant</span>
-              <p class="muted">🔐 Login securely via code and submit support tickets.</p>
-            </div>
-            <div class="preview-item">
-              <span class="pill">Guest</span>
-              <p class="muted">🧭 Browse listings, view services, and book visits.</p>
-            </div>
-            <div class="preview-item">
-              <span class="pill">TrustStay</span>
-              <p class="muted">✨ Uniform, clean interface inspired by modern product design.</p>
-            </div>
+          <div class="row auth-actions">
+            <button class="primary-btn" type="submit">Continue</button>
+            <button class="ghost-btn" id="registerLandlordBtn" type="button">Register landlord</button>
           </div>
+        </form>
+      </div>
+
+      <div class="card landing-section">
+        <h3>Benefits</h3>
+        <div class="benefits-grid">
+          <article class="benefit-item">
+            <img class="benefit-icon-image" src="${landingImages.manageProperty}" alt="Manage Property icon" />
+            <h4>1. Manage Property</h4>
+            <p class="muted">List units, update occupancy, and run landlord actions from one organized dashboard.</p>
+          </article>
+          <article class="benefit-item">
+            <img class="benefit-icon-image" src="${landingImages.earnWithEase}" alt="Earn with Ease icon" />
+            <h4>2. Earn with Ease</h4>
+            <p class="muted">Keep listings active, connect with tenants faster, and streamline payment workflows.</p>
+          </article>
+          <article class="benefit-item">
+            <img class="benefit-icon-image" src="${landingImages.ecosystem}" alt="Smart ecosystem icon" />
+            <h4>3. Smart Connected Ecosystem</h4>
+            <p class="muted">Bring listings, services, tenant requests, and communication into one trusted platform.</p>
+          </article>
+        </div>
+      </div>
+
+      <div class="card landing-section">
+        <h3>How TrustStay Works</h3>
+        <div class="process-grid">
+          <article class="process-step"><img class="process-icon-image" src="${landingImages.process}" alt="Process icon" /><p>Choose your role and sign in as landlord, tenant, or guest.</p></article>
+          <article class="process-step"><img class="process-icon-image" src="${landingImages.process}" alt="Process icon" /><p>Browse available listings with location, photos, and verified contact details.</p></article>
+          <article class="process-step"><img class="process-icon-image" src="${landingImages.process}" alt="Process icon" /><p>Landlords publish and manage properties while tenants connect using secure access codes.</p></article>
+          <article class="process-step"><img class="process-icon-image" src="${landingImages.process}" alt="Process icon" /><p>Everyone benefits from one connected system for requests, feedback, services, and follow-up.</p></article>
+        </div>
+      </div>
+
+      <div class="card landing-section testimonial-section">
+        <div class="row">
+          <h3>What Users Say</h3>
+          <div class="inline-actions">
+            <button class="ghost-btn" id="prevFeedbackBtn" type="button">←</button>
+            <button class="ghost-btn" id="nextFeedbackBtn" type="button">→</button>
+          </div>
+        </div>
+        <div id="feedbackSlides" class="feedback-slides">
+          ${testimonials
+            .map(
+              (item, idx) => `
+                <article class="feedback-item ${idx === 0 ? "active" : ""}">
+                  <p class="feedback-quote">"${item.quote}"</p>
+                  <p><strong>${item.author}</strong></p>
+                  <p class="muted tiny">${item.role}</p>
+                </article>
+              `
+            )
+            .join("")}
         </div>
       </div>
     </section>
@@ -439,6 +500,29 @@ const renderLogin = () => {
     state.isLoggedIn = true;
     setScreen("menu");
   });
+
+  const slides = Array.from(document.querySelectorAll(".feedback-item"));
+  let activeSlide = 0;
+  const renderSlide = () => {
+    slides.forEach((slide, idx) => {
+      slide.classList.toggle("active", idx === activeSlide);
+    });
+  };
+
+  document.getElementById("prevFeedbackBtn").addEventListener("click", () => {
+    activeSlide = (activeSlide - 1 + slides.length) % slides.length;
+    renderSlide();
+  });
+
+  document.getElementById("nextFeedbackBtn").addEventListener("click", () => {
+    activeSlide = (activeSlide + 1) % slides.length;
+    renderSlide();
+  });
+
+  feedbackTimer = setInterval(() => {
+    activeSlide = (activeSlide + 1) % slides.length;
+    renderSlide();
+  }, 4500);
 };
 
 // Landlord Registration
@@ -1269,8 +1353,18 @@ const renderLandlordDashboard = () => {
     .map(
       (house) => `
         <article class="card house-content">
+          <div class="row listing-title-row">
+            <h3>${house.name}</h3>
+            <div class="property-menu-wrap">
+              <button class="ghost-btn icon-only-btn" data-property-menu-toggle="${house.id}" type="button" aria-label="Open property actions">⋯</button>
+              <div class="property-menu" data-property-menu="${house.id}">
+                <button class="menu-item danger-btn" data-delete-house="${house.id}" type="button">Delete Property</button>
+                <button class="menu-item ghost-btn" data-generate-qr="${house.id}" type="button">Generate QR Code</button>
+                <button class="menu-item ghost-btn" data-email-tenant-code="${house.id}" type="button">Email Tenant Code Card</button>
+              </div>
+            </div>
+          </div>
           ${house.photo ? `<img class="details-photo" src="${house.photo}" alt="${house.name}" />` : `<div class="details-photo no-photo">No image uploaded yet</div>`}
-          <h3>${house.name}</h3>
           <p><strong>${house.priceText}</strong> • ${house.purpose}</p>
           <p class="muted">Status: <strong>${house.occupancyStatus === "occupied" ? "Occupied" : "Vacant"}</strong></p>
           <p class="muted">Views: ${house.fakeViews}</p>
@@ -1278,14 +1372,6 @@ const renderLandlordDashboard = () => {
           <button class="${house.occupancyStatus === "occupied" ? "ghost-btn" : "danger-btn"}" data-toggle-occupancy="${house.id}" type="button">
             ${house.occupancyStatus === "occupied" ? "Mark as Vacant" : "Mark as Occupied"}
           </button>
-          <div class="property-menu-wrap">
-            <button class="ghost-btn icon-only-btn" data-property-menu-toggle="${house.id}" type="button" aria-label="Open property actions">⋯</button>
-            <div class="property-menu" data-property-menu="${house.id}">
-              <button class="menu-item danger-btn" data-delete-house="${house.id}" type="button">Delete Property</button>
-              <button class="menu-item ghost-btn" data-generate-qr="${house.id}" type="button">Generate QR Code</button>
-              <button class="menu-item ghost-btn" data-email-tenant-code="${house.id}" type="button">Email Tenant Code Card</button>
-            </div>
-          </div>
 
         </article>
       `
