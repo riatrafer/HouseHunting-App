@@ -176,8 +176,7 @@ router.post("/properties", requireAuth(["landlord"]), async (req, res) => {
     };
 
     if (!property.photo) {
-      property.photo =
-        property.photos?.[0] || "https://via.placeholder.com/400x300?text=New+Property";
+      property.photo = property.photos?.[0] || null;
     }
 
     const ref = await db.collection("properties").add(property);

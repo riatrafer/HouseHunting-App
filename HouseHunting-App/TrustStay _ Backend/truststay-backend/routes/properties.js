@@ -1,52 +1,17 @@
 import express from "express";
-import fs from "fs";
-import path from "path";
-import { fileURLToPath } from "url";
 import { db } from "../config/firebase.js";
 
 const router = express.Router();
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
-async function seedFromLocalJsonIfEmpty() {
-  const existingSnap = await db.collection("properties").limit(1).get();
-  if (!existingSnap.empty) return;
-
-  const dataPath = path.resolve(__dirname, "../../data/houses.json");
-  if (!fs.existsSync(dataPath)) return;
-
-  const parsed = JSON.parse(fs.readFileSync(dataPath, "utf-8"));
-  const houses = Array.isArray(parsed?.houses) ? parsed.houses : [];
-  if (!houses.length) return;
-
-  const batch = db.batch();
-  houses.forEach((house) => {
-    const ref = db.collection("properties").doc(String(house.id));
-    const occupancyStatus = house.occupancyStatus || (house.isRented ? "occupied" : "vacant");
-    batch.set(
-      ref,
-      {
-        ...house,
-        occupancyStatus,
-        isRented: occupancyStatus === "occupied",
-        landlordId: null,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      },
-      { merge: true }
-    );
-  });
-  await batch.commit();
-}
-
 router.get("/public", async (req, res) => {
   try {
-    await seedFromLocalJsonIfEmpty();
     const snap = await db.collection("properties").get();
     const properties = snap.docs
       .map((d) => ({ ...d.data(), id: d.id }))
-      .filter((p) => !p.isRented && p.occupancyStatus !== "occupied");
+      .filter((p) => {
+        const hasLandlordOwner = !!(p.landlordId && String(p.landlordId).trim());
+        return hasLandlordOwner && !p.isRented && p.occupancyStatus !== "occupied";
+      });
     res.json({ properties });
   } catch (error) {
     res.status(500).json({ error: error.message });

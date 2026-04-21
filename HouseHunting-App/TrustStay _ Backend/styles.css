@@ -1,9 +1,9 @@
 :root {
-  --bg: #f6f8fb;
+  --bg: #f4f5f7;
   --card: #ffffff;
-  --text: #24303f;
-  --muted: #637083;
-  --brand: #2563eb;
+  --text: #1d1d1f;
+  --muted: #6e6e73;
+  --brand: #0071e3;
   --ok: #16a34a;
   --warn: #facc15;
   --border: #e5e7eb;
@@ -15,13 +15,13 @@
 
 body {
   margin: 0;
-  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
   background: var(--bg);
   color: var(--text);
 }
 
 .app-header {
-  background: var(--card);
+  background: rgba(255, 255, 255, 0.85);
   border-bottom: 1px solid var(--border);
   padding: 1rem;
   display: flex;
@@ -30,6 +30,7 @@ body {
   position: sticky;
   top: 0;
   z-index: 5;
+  backdrop-filter: blur(10px);
 }
 
 h1,
@@ -48,20 +49,29 @@ p {
 .primary-btn,
 .danger-btn {
   border: 1px solid var(--border);
-  border-radius: 8px;
-  padding: 0.6rem 0.9rem;
+  border-radius: 999px;
+  padding: 0.62rem 1rem;
   cursor: pointer;
   font-size: 0.95rem;
+  font-weight: 600;
+  transition: all 0.2s ease;
 }
 
 .primary-btn {
   background: var(--brand);
   color: #fff;
   border: none;
+  box-shadow: 0 6px 16px rgba(0, 113, 227, 0.25);
 }
 
 .ghost-btn {
   background: #fff;
+}
+
+.primary-btn:hover,
+.ghost-btn:hover,
+.danger-btn:hover {
+  transform: translateY(-1px);
 }
 
 .danger-btn {
@@ -111,8 +121,9 @@ main {
 .card {
   background: var(--card);
   border: 1px solid var(--border);
-  border-radius: 12px;
+  border-radius: 16px;
   overflow: hidden;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.06);
 }
 
 .house-grid {
@@ -185,7 +196,7 @@ main {
 }
 
 .house-content {
-  padding: 0.9rem;
+  padding: 1rem;
 }
 
 .muted {
@@ -225,6 +236,14 @@ main {
   height: 330px;
   object-fit: cover;
   border-radius: 12px;
+}
+
+.no-photo {
+  display: grid;
+  place-items: center;
+  background: #f3f4f6;
+  color: var(--muted);
+  border: 1px dashed var(--border);
 }
 
 .ratings-list {
@@ -329,7 +348,7 @@ textarea {
 
 .unit-actions {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(1, minmax(0, 1fr));
   gap: 0.45rem;
   margin: 0.65rem 0;
 }
@@ -588,7 +607,7 @@ textarea {
   border: 1px solid var(--border);
   border-radius: 10px;
   padding: 0.65rem;
-  background: #f8fafc;
+  background: #fbfbfd;
 }
 
 .pill {
@@ -609,6 +628,58 @@ textarea {
 
 .action-card {
   padding: 0.9rem;
+}
+
+.empty-carousel {
+  display: grid;
+  place-items: center;
+}
+
+.property-menu-wrap {
+  position: relative;
+  margin-top: 0.6rem;
+}
+
+.icon-only-btn {
+  width: 40px;
+  height: 40px;
+  border-radius: 999px;
+  padding: 0;
+  font-size: 1.3rem;
+  line-height: 1;
+}
+
+.property-menu {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 0.4rem);
+  min-width: 210px;
+  display: none;
+  flex-direction: column;
+  gap: 0.45rem;
+  padding: 0.55rem;
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  box-shadow: 0 18px 34px rgba(0, 0, 0, 0.14);
+  z-index: 20;
+}
+
+.property-menu.open {
+  display: flex;
+}
+
+.menu-item {
+  width: 100%;
+  justify-content: flex-start;
+}
+
+.listing-title-row {
+  align-items: flex-start;
+}
+
+.listing-title-row h3 {
+  margin-bottom: 0.25rem;
 }
 
 .security-note {

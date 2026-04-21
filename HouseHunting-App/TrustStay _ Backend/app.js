@@ -94,6 +94,21 @@ const answerHelpQuery = (query) => {
 
 // API helper function
 const API_BASE = "http://localhost:3000/api";
+const AUTH_STORAGE_KEY = "truststayAuth";
+
+const persistAuthState = () => {
+  const payload = {
+    token: state.authToken || null,
+    role: state.role || null,
+    landlordProfile: state.landlordProfile || null,
+    tenantProfile: state.tenantProfile || null,
+  };
+  localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify(payload));
+};
+
+const clearPersistedAuthState = () => {
+  localStorage.removeItem(AUTH_STORAGE_KEY);
+};
 
 const setBusy = (busy, text = "") => {
   state.isBusy = busy;
@@ -277,6 +292,7 @@ const hardLogout = async () => {
   state.landlordNotificationFilter = "all";
   state._notificationsPrimed = false;
   state.chats = {};
+  clearPersistedAuthState();
   showStatusToast("Logged out", "success");
   setScreen("login");
 };
@@ -306,16 +322,15 @@ const normalizeHouse = (house) => {
   const normalized = { ...house };
   normalized.id = String(house.id);
   normalized.photos = Array.isArray(house.photos) ? house.photos : [];
-  normalized.photo =
-    safeText(house.photo) ||
-    safeText(normalized.photos[0]) ||
-    "https://via.placeholder.com/400x300?text=Property";
+  normalized.photo = safeText(house.photo) || safeText(normalized.photos[0]) || "";
   normalized.name = safeText(house.name) || "Untitled property";
   normalized.location = safeText(house.location) || "Unknown location";
   normalized.fullAddress = safeText(house.fullAddress) || normalized.location;
   normalized.purpose = safeText(house.purpose) || "Rent (pay monthly)";
   normalized.priceText = safeText(house.priceText) || "Price on request";
   normalized.managerName = safeText(house.managerName) || "Property manager";
+  normalized.landlordPhone = safeText(house.landlordPhone);
+  normalized.caretakerPhone = safeText(house.caretakerPhone);
   normalized.fakeViews = Number(house.fakeViews ?? 0) || 0;
   normalized.fakeMessages = Number(house.fakeMessages ?? 0) || 0;
   normalized.occupancyStatus =
@@ -334,7 +349,10 @@ const normalizeHouse = (house) => {
 };
 
 const renderPhotoCarousel = (house) => {
-  const photos = house.photos?.length ? house.photos : [house.photo];
+  const photos = house.photos?.length ? house.photos : [house.photo].filter(Boolean);
+  if (!photos.length) {
+    return `<div class="carousel empty-carousel"><div class="muted">No image uploaded yet</div></div>`;
+  }
   const safePhotos = photos.filter(Boolean);
   const items = safePhotos
     .map(
@@ -357,7 +375,7 @@ const renderLogin = () => {
       <div class="auth-shell">
         <div class="card auth-card">
           <h2>Welcome to TrustStay</h2>
-          <p class="muted">Select your role to continue.</p>
+          <p class="muted">A cleaner home search experience for landlords and tenants.</p>
 
           <form id="roleSelectForm" class="auth-form">
             <label>
@@ -381,15 +399,19 @@ const renderLogin = () => {
           <div class="tenant-preview-grid">
             <div class="preview-item">
               <span class="pill">Landlord</span>
-              <p class="muted">Add, delete, toggle status, generate QR and tenant codes.</p>
+              <p class="muted">🏠 Add and manage properties with occupancy controls.</p>
             </div>
             <div class="preview-item">
               <span class="pill">Tenant</span>
-              <p class="muted">Login via code, pay rent, browse other houses, rate the current house.</p>
+              <p class="muted">🔐 Login securely via code and submit support tickets.</p>
             </div>
             <div class="preview-item">
               <span class="pill">Guest</span>
-              <p class="muted">Browse available units, find nearby services, and book appointments.</p>
+              <p class="muted">🧭 Browse listings, view services, and book visits.</p>
+            </div>
+            <div class="preview-item">
+              <span class="pill">TrustStay</span>
+              <p class="muted">✨ Uniform, clean interface inspired by modern product design.</p>
             </div>
           </div>
         </div>
@@ -555,6 +577,7 @@ const renderLandlordLogin = () => {
     state.landlordProfile = loginRes.landlord;
     state.role = "landlord";
     state.isLoggedIn = true;
+    persistAuthState();
     await refreshLandlordProperties();
     await refreshLandlordNotifications();
     setScreen("dashboard");
@@ -600,6 +623,7 @@ const renderTenantLogin = () => {
     state.tenantProfile = loginRes.tenant;
     state.role = "tenant";
     state.isLoggedIn = true;
+    persistAuthState();
     setScreen("tenantDashboard");
   };
 };
@@ -814,12 +838,31 @@ const renderHouseList = () => {
         <article class="card">
           ${renderPhotoCarousel(house)}
           <div class="house-content">
-            <h3>${house.name}</h3>
+            <div class="row listing-title-row">
+              <h3>${house.name}</h3>
+              <div class="property-menu-wrap">
+                <button class="ghost-btn icon-only-btn" data-listing-menu-toggle="${house.id}" type="button" aria-label="Open listing actions">⋯</button>
+                <div class="property-menu" data-listing-menu="${house.id}">
+                  <button class="ghost-btn menu-item" data-open-services="${house.id}" type="button">Services</button>
+                  <a class="ghost-btn link-btn menu-item" href="${mapsUrl}" target="_blank" rel="noopener noreferrer">Google Maps</a>
+                  <button
+                    class="${requestSent ? "ghost-btn" : "primary-btn"} menu-item"
+                    data-request-landlord="${house.id}"
+                    type="button"
+                    ${requestSent ? "disabled" : ""}
+                  >
+                    ${requestSent ? "Request sent" : "Request landlord"}
+                  </button>
+                </div>
+              </div>
+            </div>
             <p>${house.location}</p>
             <p><strong>${house.priceText}</strong></p>
             <p class="muted">Purpose: ${house.purpose}</p>
             <p class="muted"><strong>Landlord:</strong> ${house.landlord.name}</p>
             <p class="muted"><strong>Contact person:</strong> ${house.managerName}</p>
+            ${house.landlordPhone ? `<p class="muted"><strong>Landlord phone:</strong> ${house.landlordPhone}</p>` : ""}
+            ${house.caretakerPhone ? `<p class="muted"><strong>Caretaker phone:</strong> ${house.caretakerPhone}</p>` : ""}
             ${house.landlord.verified ? `<span class="badge-verified">Verified Landlord</span>` : ""}
             <p style="margin-top:.55rem;">
               <span class="stars">${toStars(house.averageStars)}</span>
@@ -827,17 +870,7 @@ const renderHouseList = () => {
             </p>
             <div class="unit-actions">
               <button class="primary-btn" data-open-house="${house.id}" type="button">View details</button>
-              <button class="ghost-btn" data-open-services="${house.id}" type="button">Services</button>
-              <a class="ghost-btn link-btn" href="${mapsUrl}" target="_blank" rel="noopener noreferrer">Google Maps</a>
             </div>
-            <button
-              class="${requestSent ? "ghost-btn" : "primary-btn"}"
-              data-request-landlord="${house.id}"
-              type="button"
-              ${requestSent ? "disabled" : ""}
-            >
-              ${requestSent ? "Request sent" : "Request landlord"}
-            </button>
             ${requestSent ? `<p class="request-status">Request sent waiting for reply</p>` : ""}
           </div>
         </article>
@@ -995,6 +1028,24 @@ const renderHouseList = () => {
     });
   });
 
+  document.querySelectorAll("[data-listing-menu-toggle]").forEach((btn) => {
+    btn.addEventListener("click", (event) => {
+      event.stopPropagation();
+      const houseId = String(btn.dataset.listingMenuToggle);
+      document.querySelectorAll("[data-listing-menu]").forEach((menu) => {
+        if (menu.dataset.listingMenu === houseId) {
+          menu.classList.toggle("open");
+        } else {
+          menu.classList.remove("open");
+        }
+      });
+    });
+  });
+
+  document.addEventListener("click", () => {
+    document.querySelectorAll("[data-listing-menu].open").forEach((menu) => menu.classList.remove("open"));
+  });
+
   document.getElementById("faqHelpFab").addEventListener("click", () => {
     state.faqOpen = !state.faqOpen;
     renderHouseList();
@@ -1061,7 +1112,7 @@ const renderHouseDetails = (house) => {
       <h2>House Details + Ratings</h2>
       <div class="split">
         <div>
-          <img class="details-photo" src="${house.photo}" alt="${house.name}" />
+          ${house.photo ? `<img class="details-photo" src="${house.photo}" alt="${house.name}" />` : `<div class="details-photo no-photo">No image uploaded yet</div>`}
         </div>
         <div class="card house-content">
           <h3>${house.name}</h3>
@@ -1069,6 +1120,8 @@ const renderHouseDetails = (house) => {
           <p><strong>${house.priceText}</strong> • ${house.purpose}</p>
           <p><strong>Landlord:</strong> ${house.landlord.name} ${house.landlord.verified ? `<span class="badge-verified">Verified</span>` : ""}</p>
           <p><strong>Contact person:</strong> ${house.managerName}</p>
+          ${house.landlordPhone ? `<p><strong>Landlord phone:</strong> ${house.landlordPhone}</p>` : ""}
+          ${house.caretakerPhone ? `<p><strong>Caretaker phone:</strong> ${house.caretakerPhone}</p>` : ""}
           <p>
             <span class="stars">${toStars(house.averageStars)}</span>
             (${house.averageStars})
@@ -1216,7 +1269,7 @@ const renderLandlordDashboard = () => {
     .map(
       (house) => `
         <article class="card house-content">
-          <img class="details-photo" src="${house.photo}" alt="${house.name}" />
+          ${house.photo ? `<img class="details-photo" src="${house.photo}" alt="${house.name}" />` : `<div class="details-photo no-photo">No image uploaded yet</div>`}
           <h3>${house.name}</h3>
           <p><strong>${house.priceText}</strong> • ${house.purpose}</p>
           <p class="muted">Status: <strong>${house.occupancyStatus === "occupied" ? "Occupied" : "Vacant"}</strong></p>
@@ -1225,16 +1278,14 @@ const renderLandlordDashboard = () => {
           <button class="${house.occupancyStatus === "occupied" ? "ghost-btn" : "danger-btn"}" data-toggle-occupancy="${house.id}" type="button">
             ${house.occupancyStatus === "occupied" ? "Mark as Vacant" : "Mark as Occupied"}
           </button>
-          <!-- Delete button -->
-          <button class="danger-btn" data-delete-house="${house.id}" type="button">
-            Delete Property
-          </button>
-          <button class="ghost-btn" data-generate-qr="${house.id}">
-          Generate QR Code
-          </button>
-          <button class="ghost-btn" data-email-tenant-code="${house.id}" type="button">
-            Email Tenant Code Card
-          </button>
+          <div class="property-menu-wrap">
+            <button class="ghost-btn icon-only-btn" data-property-menu-toggle="${house.id}" type="button" aria-label="Open property actions">⋯</button>
+            <div class="property-menu" data-property-menu="${house.id}">
+              <button class="menu-item danger-btn" data-delete-house="${house.id}" type="button">Delete Property</button>
+              <button class="menu-item ghost-btn" data-generate-qr="${house.id}" type="button">Generate QR Code</button>
+              <button class="menu-item ghost-btn" data-email-tenant-code="${house.id}" type="button">Email Tenant Code Card</button>
+            </div>
+          </div>
 
         </article>
       `
@@ -1404,6 +1455,24 @@ const renderLandlordDashboard = () => {
       showStatusToast("Tenant code card sent to email.", "success");
     });
   });
+
+  document.querySelectorAll("[data-property-menu-toggle]").forEach((btn) => {
+    btn.addEventListener("click", (event) => {
+      event.stopPropagation();
+      const houseId = String(btn.dataset.propertyMenuToggle);
+      document.querySelectorAll(".property-menu").forEach((menu) => {
+        if (menu.dataset.propertyMenu === houseId) {
+          menu.classList.toggle("open");
+        } else {
+          menu.classList.remove("open");
+        }
+      });
+    });
+  });
+
+  document.addEventListener("click", () => {
+    document.querySelectorAll(".property-menu.open").forEach((menu) => menu.classList.remove("open"));
+  });
 };
 
 const printQrCanvas = (canvas) => {
@@ -1556,6 +1625,12 @@ const refreshLandlordNotifications = async () => {
       landlordPhone: safeText(fd.get("landlordPhone")),
       caretakerPhone: safeText(fd.get("caretakerPhone")),
       photos,
+      photo: photos[0] || "",
+      managerName: safeText(fd.get("caretakerPhone")) || "Caretaker",
+      landlord: {
+        name: safeText(state.landlordProfile?.name) || "Landlord",
+        verified: !!state.landlordProfile?.verified,
+      },
     };
     const res = await apiRequest("/landlord/properties", "POST", payload);
     if (!res) return;
@@ -1774,18 +1849,35 @@ const bootstrap = async () => {
       overlay.innerHTML = `<div class="busy-card"><div class="busy-spinner"></div><p id="busyText">Loading…</p></div>`;
       document.body.appendChild(overlay);
     }
+    const persistedAuthRaw = localStorage.getItem(AUTH_STORAGE_KEY);
+    if (persistedAuthRaw) {
+      try {
+        const persistedAuth = JSON.parse(persistedAuthRaw);
+        state.authToken = persistedAuth?.token || null;
+        state.role = persistedAuth?.role || null;
+        state.landlordProfile = persistedAuth?.landlordProfile || null;
+        state.tenantProfile = persistedAuth?.tenantProfile || null;
+        state.isLoggedIn = !!state.authToken && !!state.role;
+      } catch {
+        clearPersistedAuthState();
+      }
+    }
+
     const ok = await refreshPublicProperties();
     const healthy = await checkBackendHealth();
     if (!healthy) {
       showStatusToast("Backend not reachable or outdated. Restart backend on port 3000.", "error");
     }
     if (!ok) {
-      const response = await fetch("data/houses.json");
-      const data = await response.json();
-      state.houses = data.houses.map((house) => ({
-        ...house,
-        occupancyStatus: house.occupancyStatus || (house.isRented ? "occupied" : "vacant"),
-      }));
+      state.houses = [];
+      showStatusToast("Could not load property listings from backend.", "error");
+    }
+    if (state.isLoggedIn && state.role === "landlord") {
+      await refreshLandlordProperties();
+      await refreshLandlordNotifications();
+      state.currentScreen = "dashboard";
+    } else if (state.isLoggedIn && state.role === "tenant") {
+      state.currentScreen = "tenantDashboard";
     }
     handleRouteFromURL();
     render();
